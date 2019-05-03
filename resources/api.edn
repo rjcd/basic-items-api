@@ -1,0 +1,25 @@
+{[:zx.http.api/endpoint
+  :items.api.v1/list-items] {:handler #zx/handler
+                                       (fn [req]
+                                         {:status 200
+                                          :body (-> (zx.http/get-context req) :db)})}
+
+ [:zx.http.api/endpoint
+  :items.api.v1/describe-item] {:summary ""
+                                :parameters {:path-parameters {:id int?}}
+                                :responses {}
+                                :handler #zx/handler
+                                          (fn [req]
+                                            {:status 200
+                                             :body (-> (zx.http/get-context req) :db first)})}
+
+ [:zx.http/api
+  :items.api/v1] {:endpoints [["/items" {:context {:db [{:id 1}]}
+                                         :get #ig/ref [:zx.http.api/endpoint
+                                                       :items.api.v1/list-items]}]
+                              ["/items/:id" {:context {:db [{:id 1}]}
+                                             :get #ig/ref [:zx.http.api/endpoint
+                                                           :items.api.v1/describe-item]}]]}
+
+ :zx.http/service {:apis [["/v1" #ig/ref [:zx.http/api
+                                          :items.api/v1]]]}}
